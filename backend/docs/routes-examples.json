@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-08-17T22:56:39.636Z",
+  "baseUrl": "http://localhost:3000",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/",
+      "auth": "none",
+      "exampleRequest": null,
+      "exampleResponse": "Hello World!"
+    },
+    {
+      "method": "POST",
+      "path": "/login",
+      "auth": "none",
+      "exampleRequest": {
+        "email": "carlos.tech@empresa.com",
+        "senha": "senha123"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/listar",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/pesquisa?nome_completo=Joao",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "POST",
+      "path": "/usuario/criar",
+      "auth": "Bearer TECNICO",
+      "exampleRequest": {
+        "nome_completo": "Usuario Exemplo",
+        "cpf": "999.999.999-99",
+        "email": "usuario.exemplo@empresa.com",
+        "telefone": "11999999999",
+        "setor_id": 1,
+        "senha": "senha123"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/usuario/atualizar/:id",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "DELETE",
+      "path": "/usuario/deletar/:id",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "GET",
+      "path": "/tecnico/listar",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "GET",
+      "path": "/tecnico/pesquisa?nome_completo=Carlos",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "POST",
+      "path": "/tecnico/criar",
+      "auth": "Bearer TECNICO",
+      "exampleRequest": {
+        "nome_completo": "Tecnico Exemplo",
+        "cpf": "123.123.123-12",
+        "email": "tecnico.exemplo@empresa.com",
+        "setor_id": 1,
+        "senha": "senha123"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/tecnico/atualizar/:id",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "DELETE",
+      "path": "/tecnico/deletar/:id",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "GET",
+      "path": "/chamado/listar",
+      "auth": "Bearer TECNICO ou USUARIO"
+    },
+    {
+      "method": "GET",
+      "path": "/chamado/pesquisa?titulo=Computador",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "POST",
+      "path": "/chamado/criar",
+      "auth": "Bearer TECNICO ou USUARIO",
+      "exampleRequest": {
+        "titulo": "Chamado Exemplo",
+        "descricao": "Descricao",
+        "prioridade_id": 3,
+        "categoria_id": 1
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/chamado/responsavel/:id",
+      "auth": "Bearer TECNICO"
+    },
+    {
+      "method": "PATCH",
+      "path": "/chamado/atualizar/:id",
+      "auth": "Bearer TECNICO",
+      "exampleRequest": {
+        "novo_status": "RESOLVIDO",
+        "solucao_problema": "Resolvido."
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/chamado/cancelar/:id",
+      "auth": "Bearer TECNICO ou USUARIO"
+    }
+  ]
+}

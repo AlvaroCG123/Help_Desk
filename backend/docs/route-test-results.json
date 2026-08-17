@@ -1,0 +1,538 @@
+{
+  "summary": {
+    "executedAt": "2026-08-17T22:56:39.633Z",
+    "baseUrl": "http://localhost:3000",
+    "total": 20,
+    "success": 20,
+    "failed": 0
+  },
+  "results": [
+    {
+      "name": "Health",
+      "method": "GET",
+      "route": "/",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": "Hello World!"
+    },
+    {
+      "name": "Login Tecnico",
+      "method": "POST",
+      "route": "/login",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "email": "carlos.tech@empresa.com",
+        "senha": "senha123"
+      },
+      "response": {
+        "mensagem": "Login com sucesso",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXNzb2FfaWQiOjQsImNhcmdvIjoiVEVDTklDTyIsImlhdCI6MTc4NzAwNzM5OSwiZXhwIjoxNzg3MDkzNzk5fQ.9QUsWHj6jqrItA15HEaoQLwqSKL-qM93diSpCIAPp4E",
+        "pessoa": {
+          "nome_completo": "Carlos Eduardo",
+          "cargo": "TECNICO"
+        }
+      }
+    },
+    {
+      "name": "Login Usuario",
+      "method": "POST",
+      "route": "/login",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "email": "joao.silva@empresa.com",
+        "senha": "senha123"
+      },
+      "response": {
+        "mensagem": "Login com sucesso",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZXNzb2FfaWQiOjEsImNhcmdvIjoiVVNVQVJJTyIsImlhdCI6MTc4NzAwNzM5OSwiZXhwIjoxNzg3MDkzNzk5fQ.Sa5pXwciS_P9qSmVH6Bb9iKa442uQNJz1BbGvEW6SPg",
+        "pessoa": {
+          "nome_completo": "Joao da Silva",
+          "cargo": "USUARIO"
+        }
+      }
+    },
+    {
+      "name": "Usuario Listar",
+      "method": "GET",
+      "route": "/usuario/listar",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 1,
+          "nome_completo": "Joao da Silva",
+          "cpf": "111.111.111-11",
+          "email": "joao.silva@empresa.com",
+          "cargo": "USUARIO",
+          "telefone": "11999999991",
+          "setor_id": 1,
+          "criado_em": "2026-08-17T17:22:43.649Z"
+        },
+        {
+          "id": 2,
+          "nome_completo": "Maria Oliveira",
+          "cpf": "222.222.222-22",
+          "email": "maria.oliveira@empresa.com",
+          "cargo": "USUARIO",
+          "telefone": "11999999992",
+          "setor_id": 2,
+          "criado_em": "2026-08-17T17:22:43.655Z"
+        },
+        {
+          "id": 3,
+          "nome_completo": "Pedro Santos",
+          "cpf": "333.333.333-33",
+          "email": "pedro.santos@empresa.com",
+          "cargo": "USUARIO",
+          "telefone": "11999999993",
+          "setor_id": 3,
+          "criado_em": "2026-08-17T17:22:43.658Z"
+        }
+      ]
+    },
+    {
+      "name": "Tecnico Listar",
+      "method": "GET",
+      "route": "/tecnico/listar",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 4,
+          "nome_completo": "Carlos Eduardo",
+          "cpf": "444.444.444-44",
+          "email": "carlos.tech@empresa.com",
+          "cargo": "TECNICO",
+          "telefone": null,
+          "setor_id": 4,
+          "criado_em": "2026-08-17T17:22:43.662Z"
+        },
+        {
+          "id": 5,
+          "nome_completo": "Ana Lucia",
+          "cpf": "555.555.555-55",
+          "email": "ana.rede@empresa.com",
+          "cargo": "TECNICO",
+          "telefone": null,
+          "setor_id": 4,
+          "criado_em": "2026-08-17T17:22:43.667Z"
+        },
+        {
+          "id": 6,
+          "nome_completo": "Marcos Vinicius",
+          "cpf": "666.666.666-66",
+          "email": "marcos.dev@empresa.com",
+          "cargo": "TECNICO",
+          "telefone": null,
+          "setor_id": 4,
+          "criado_em": "2026-08-17T17:22:43.670Z"
+        }
+      ]
+    },
+    {
+      "name": "Chamado Listar (Tecnico)",
+      "method": "GET",
+      "route": "/chamado/listar",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 1,
+          "titulo": "Computador nao liga",
+          "descricao": "Desktop nao da sinal de vida ao apertar o botao power.",
+          "solucao_problema": null,
+          "prioridade_id": 3,
+          "aberto_em": "2026-08-17T17:22:43.675Z",
+          "status": "EM_ATENDIMENTO",
+          "usuario_id": 1,
+          "tecnico_id": 4,
+          "categoria_id": 1
+        },
+        {
+          "id": 2,
+          "titulo": "Sem acesso a internet",
+          "descricao": "Computador conectado no cabo, mas nao navega.",
+          "solucao_problema": "Cabo de rede substituido e teste de ping com sucesso.",
+          "prioridade_id": 2,
+          "aberto_em": "2026-08-17T17:22:43.679Z",
+          "status": "RESOLVIDO",
+          "usuario_id": 2,
+          "tecnico_id": 5,
+          "categoria_id": 3
+        },
+        {
+          "id": 3,
+          "titulo": "Esqueci senha do ERP",
+          "descricao": "Nao consigo acessar o sistema financeiro desde ontem.",
+          "solucao_problema": null,
+          "prioridade_id": 2,
+          "aberto_em": "2026-08-17T17:22:43.685Z",
+          "status": "ABERTO",
+          "usuario_id": 1,
+          "tecnico_id": null,
+          "categoria_id": 4
+        },
+        {
+          "id": 4,
+          "titulo": "Instalacao do Pacote Office",
+          "descricao": "Preciso do Office instalado na maquina nova do Comercial.",
+          "solucao_problema": "Pacote Office 365 instalado e ativado.",
+          "prioridade_id": 1,
+          "aberto_em": "2026-08-17T17:22:43.690Z",
+          "status": "FECHADO",
+          "usuario_id": 3,
+          "tecnico_id": 6,
+          "categoria_id": 2
+        }
+      ]
+    },
+    {
+      "name": "Chamado Listar (Usuario)",
+      "method": "GET",
+      "route": "/chamado/listar",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 1,
+          "titulo": "Computador nao liga",
+          "descricao": "Desktop nao da sinal de vida ao apertar o botao power.",
+          "solucao_problema": null,
+          "prioridade_id": 3,
+          "aberto_em": "2026-08-17T17:22:43.675Z",
+          "status": "EM_ATENDIMENTO",
+          "usuario_id": 1,
+          "tecnico_id": 4,
+          "categoria_id": 1
+        },
+        {
+          "id": 2,
+          "titulo": "Sem acesso a internet",
+          "descricao": "Computador conectado no cabo, mas nao navega.",
+          "solucao_problema": "Cabo de rede substituido e teste de ping com sucesso.",
+          "prioridade_id": 2,
+          "aberto_em": "2026-08-17T17:22:43.679Z",
+          "status": "RESOLVIDO",
+          "usuario_id": 2,
+          "tecnico_id": 5,
+          "categoria_id": 3
+        },
+        {
+          "id": 3,
+          "titulo": "Esqueci senha do ERP",
+          "descricao": "Nao consigo acessar o sistema financeiro desde ontem.",
+          "solucao_problema": null,
+          "prioridade_id": 2,
+          "aberto_em": "2026-08-17T17:22:43.685Z",
+          "status": "ABERTO",
+          "usuario_id": 1,
+          "tecnico_id": null,
+          "categoria_id": 4
+        },
+        {
+          "id": 4,
+          "titulo": "Instalacao do Pacote Office",
+          "descricao": "Preciso do Office instalado na maquina nova do Comercial.",
+          "solucao_problema": "Pacote Office 365 instalado e ativado.",
+          "prioridade_id": 1,
+          "aberto_em": "2026-08-17T17:22:43.690Z",
+          "status": "FECHADO",
+          "usuario_id": 3,
+          "tecnico_id": 6,
+          "categoria_id": 2
+        }
+      ]
+    },
+    {
+      "name": "Usuario Pesquisa",
+      "method": "GET",
+      "route": "/usuario/pesquisa?nome_completo=Joao",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 1,
+          "nome_completo": "Joao da Silva",
+          "cpf": "111.111.111-11",
+          "email": "joao.silva@empresa.com",
+          "cargo": "USUARIO",
+          "telefone": "11999999991",
+          "setor_id": 1,
+          "criado_em": "2026-08-17T17:22:43.649Z"
+        }
+      ]
+    },
+    {
+      "name": "Tecnico Pesquisa",
+      "method": "GET",
+      "route": "/tecnico/pesquisa?nome_completo=Carlos",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 4,
+          "nome_completo": "Carlos Eduardo",
+          "cpf": "444.444.444-44",
+          "email": "carlos.tech@empresa.com",
+          "cargo": "TECNICO",
+          "telefone": null,
+          "setor_id": 4,
+          "criado_em": "2026-08-17T17:22:43.662Z"
+        }
+      ]
+    },
+    {
+      "name": "Chamado Pesquisa",
+      "method": "GET",
+      "route": "/chamado/pesquisa?titulo=Computador",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": [
+        {
+          "id": 1,
+          "titulo": "Computador nao liga",
+          "descricao": "Desktop nao da sinal de vida ao apertar o botao power.",
+          "solucao_problema": null,
+          "prioridade_id": 3,
+          "aberto_em": "2026-08-17T17:22:43.675Z",
+          "status": "EM_ATENDIMENTO",
+          "usuario_id": 1,
+          "tecnico_id": 4,
+          "categoria_id": 1
+        }
+      ]
+    },
+    {
+      "name": "Usuario Criar",
+      "method": "POST",
+      "route": "/usuario/criar",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "nome_completo": "Usuario Teste API",
+        "cpf": "777.777.777-77",
+        "email": "usuario.teste.api@empresa.com",
+        "telefone": "11999999888",
+        "setor_id": 1,
+        "senha": "senha123"
+      },
+      "response": {
+        "id": 7,
+        "nome_completo": "Usuario Teste API",
+        "cpf": "777.777.777-77",
+        "email": "usuario.teste.api@empresa.com",
+        "cargo": "USUARIO",
+        "telefone": "11999999888",
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.260Z"
+      }
+    },
+    {
+      "name": "Usuario Atualizar",
+      "method": "PUT",
+      "route": "/usuario/atualizar/7",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "nome_completo": "Usuario Teste API Atualizado",
+        "cpf": "777.777.777-77",
+        "email": "usuario.teste.api@empresa.com",
+        "telefone": "11999999777",
+        "setor_id": 1,
+        "senha": "senha123"
+      },
+      "response": {
+        "id": 7,
+        "nome_completo": "Usuario Teste API Atualizado",
+        "cpf": "777.777.777-77",
+        "email": "usuario.teste.api@empresa.com",
+        "cargo": "USUARIO",
+        "telefone": "11999999777",
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.260Z"
+      }
+    },
+    {
+      "name": "Usuario Deletar",
+      "method": "DELETE",
+      "route": "/usuario/deletar/7",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": {
+        "id": 7,
+        "nome_completo": "Usuario Teste API Atualizado",
+        "cpf": "777.777.777-77",
+        "email": "usuario.teste.api@empresa.com",
+        "cargo": "USUARIO",
+        "telefone": "11999999777",
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.260Z"
+      }
+    },
+    {
+      "name": "Tecnico Criar",
+      "method": "POST",
+      "route": "/tecnico/criar",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "nome_completo": "Tecnico Teste API",
+        "cpf": "888.888.888-88",
+        "email": "tecnico.teste.api@empresa.com",
+        "setor_id": 1,
+        "senha": "senha123"
+      },
+      "response": {
+        "id": 8,
+        "nome_completo": "Tecnico Teste API",
+        "cpf": "888.888.888-88",
+        "email": "tecnico.teste.api@empresa.com",
+        "cargo": "TECNICO",
+        "telefone": null,
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.458Z"
+      }
+    },
+    {
+      "name": "Tecnico Atualizar",
+      "method": "PUT",
+      "route": "/tecnico/atualizar/8",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "nome_completo": "Tecnico Teste API Atualizado",
+        "cpf": "888.888.888-88",
+        "email": "tecnico.teste.api@empresa.com",
+        "setor_id": 1,
+        "senha": "senha123"
+      },
+      "response": {
+        "id": 8,
+        "nome_completo": "Tecnico Teste API Atualizado",
+        "cpf": "888.888.888-88",
+        "email": "tecnico.teste.api@empresa.com",
+        "cargo": "TECNICO",
+        "telefone": null,
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.458Z"
+      }
+    },
+    {
+      "name": "Tecnico Deletar",
+      "method": "DELETE",
+      "route": "/tecnico/deletar/8",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": {
+        "id": 8,
+        "nome_completo": "Tecnico Teste API Atualizado",
+        "cpf": "888.888.888-88",
+        "email": "tecnico.teste.api@empresa.com",
+        "cargo": "TECNICO",
+        "telefone": null,
+        "setor_id": 1,
+        "criado_em": "2026-08-17T22:56:39.458Z"
+      }
+    },
+    {
+      "name": "Chamado Criar",
+      "method": "POST",
+      "route": "/chamado/criar",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "titulo": "Chamado Teste API",
+        "descricao": "Chamado criado por teste automatizado de rota.",
+        "prioridade_id": 3,
+        "categoria_id": 1
+      },
+      "response": {
+        "id": 5,
+        "titulo": "Chamado Teste API",
+        "descricao": "Chamado criado por teste automatizado de rota.",
+        "solucao_problema": null,
+        "prioridade_id": 3,
+        "aberto_em": "2026-08-17T22:56:39.582Z",
+        "status": "ABERTO",
+        "usuario_id": 1,
+        "tecnico_id": null,
+        "categoria_id": 1
+      }
+    },
+    {
+      "name": "Chamado Assumir Responsavel",
+      "method": "POST",
+      "route": "/chamado/responsavel/5",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": {
+        "id": 5,
+        "titulo": "Chamado Teste API",
+        "descricao": "Chamado criado por teste automatizado de rota.",
+        "solucao_problema": null,
+        "prioridade_id": 3,
+        "aberto_em": "2026-08-17T22:56:39.582Z",
+        "status": "EM_ATENDIMENTO",
+        "usuario_id": 1,
+        "tecnico_id": 4,
+        "categoria_id": 1
+      }
+    },
+    {
+      "name": "Chamado Atualizar Status",
+      "method": "PATCH",
+      "route": "/chamado/atualizar/5",
+      "status": 200,
+      "ok": true,
+      "request": {
+        "novo_status": "RESOLVIDO",
+        "solucao_problema": "Resolvido pelo teste automatizado."
+      },
+      "response": {
+        "id": 5,
+        "titulo": "Chamado Teste API",
+        "descricao": "Chamado criado por teste automatizado de rota.",
+        "solucao_problema": "Resolvido pelo teste automatizado.",
+        "prioridade_id": 3,
+        "aberto_em": "2026-08-17T22:56:39.582Z",
+        "status": "RESOLVIDO",
+        "usuario_id": 1,
+        "tecnico_id": 4,
+        "categoria_id": 1
+      }
+    },
+    {
+      "name": "Chamado Cancelar",
+      "method": "PATCH",
+      "route": "/chamado/cancelar/5",
+      "status": 200,
+      "ok": true,
+      "request": null,
+      "response": {
+        "id": 5,
+        "titulo": "Chamado Teste API",
+        "descricao": "Chamado criado por teste automatizado de rota.",
+        "solucao_problema": "Resolvido pelo teste automatizado.",
+        "prioridade_id": 3,
+        "aberto_em": "2026-08-17T22:56:39.582Z",
+        "status": "CANCELADO",
+        "usuario_id": 1,
+        "tecnico_id": 4,
+        "categoria_id": 1
+      }
+    }
+  ]
+}

@@ -23,7 +23,7 @@ export async function PesquisaNomeTecnico(req: AuthRequest, res: Response) {
         const { nome_completo } = req.query
 
         if(!nome_completo || typeof nome_completo !== 'string'){
-            res.status(401).json({error: "Parametro Invalido."})
+            res.status(400).json({error: "Parametro Invalido."})
             return
         }
 
@@ -45,10 +45,16 @@ export async function PesquisaNomeTecnico(req: AuthRequest, res: Response) {
 //CRIAÇAO DE TECNICO COM A DIFERENÇA DE ESPECIALIDADE E NAO TEM TELEFONE
 export async function CriarTecnico(req: AuthRequest, res: Response) {
     try {
-        const { nome_completo, cpf, email, especialidade, senha } = req.body
+        const { nome_completo, cpf, email, setor_id, senha } = req.body
+        const setorIdNumber = Number(setor_id)
 
-        if( !nome_completo  || !cpf  || !email  || !especialidade  || !senha ){
+        if( !nome_completo  || !cpf  || !email  || !setor_id  || !senha ){
             res.status(400).json({error: "Todos os dados são obrigatório."})
+            return
+        }
+
+        if (Number.isNaN(setorIdNumber)) {
+            res.status(400).json({error: "setor_id inválido."})
             return
         }
 
@@ -56,7 +62,7 @@ export async function CriarTecnico(req: AuthRequest, res: Response) {
 
         const criar = await prisma.pessoa.create({
             data:{
-                nome_completo, cpf, email, especialidade, senha: senha_hash, cargo: 'TECNICO' //ENVIA OS DADOS E O HASH DA SENHA
+                nome_completo, cpf, email, setor_id: setorIdNumber, senha: senha_hash, cargo: 'TECNICO' //ENVIA OS DADOS E O HASH DA SENHA
             },
             omit:{senha:true}
         })
@@ -71,24 +77,46 @@ export async function CriarTecnico(req: AuthRequest, res: Response) {
 export async function AtualizarTecnico(req: AuthRequest, res: Response) {
     try {
         const {id} = req.params
+        const idNumber = Number(id)
 
         if(!id){
             res.status(401).json({error:"tecnico não identificado."})
             return
         }
-        const { nome_completo, cpf, email, especialidade, senha } = req.body
 
-        if( !nome_completo  || !cpf  || !email  || !especialidade  || !senha ){
+        if (Number.isNaN(idNumber)) {
+            res.status(400).json({error: "id inválido."})
+            return
+        }
+        const { nome_completo, cpf, email, setor_id, senha } = req.body
+        const setorIdNumber = Number(setor_id)
+
+        if( !nome_completo  || !cpf  || !email  || !setor_id  || !senha ){
             res.status(400).json({error: "Todos os dados são obrigatório."})
+            return
+        }
+
+        if (Number.isNaN(setorIdNumber)) {
+            res.status(400).json({error: "setor_id inválido."})
             return
         }
 
         const senha_hash = await bcrypt.hash(senha, 10)
 
+        const tecnicoExistente = await prisma.pessoa.findFirst({
+            where: { id: idNumber, cargo: 'TECNICO' },
+            select: { id: true }
+        })
+
+        if(!tecnicoExistente){
+            res.status(404).json({error: "Técnico não encontrado."})
+            return
+        }
+
         const atualizar = await prisma.pessoa.update({
-            where: { id: Number(id)},
+            where: { id: idNumber},
             data:{
-                nome_completo, cpf, email, especialidade, senha:senha_hash, cargo: 'TECNICO'
+                nome_completo, cpf, email, setor_id: setorIdNumber, senha:senha_hash, cargo: 'TECNICO'
             },
             omit:{senha:true}
         })
@@ -103,14 +131,30 @@ export async function AtualizarTecnico(req: AuthRequest, res: Response) {
 export async function DeletarTecnico(req: AuthRequest, res: Response) {
     try {
         const {id} = req.params
+        const idNumber = Number(id)
 
         if(!id){ //VALIDAÇAO SE ENCONTRA O USUARIO DO AUTHREQUEST
             res.status(401).json({error:"id invalido."})
             return
         }
 
+        if (Number.isNaN(idNumber)) {
+            res.status(400).json({error: "id inválido."})
+            return
+        }
+
+        const tecnicoExistente = await prisma.pessoa.findFirst({
+            where: { id: idNumber, cargo: 'TECNICO' },
+            select: { id: true }
+        })
+
+        if(!tecnicoExistente){
+            res.status(404).json({error: "Técnico não encontrado."})
+            return
+        }
+
         const deletar = await prisma.pessoa.delete({
-            where: { id: Number(id) },
+            where: { id: idNumber },
             omit:{senha:true}
         })
 
