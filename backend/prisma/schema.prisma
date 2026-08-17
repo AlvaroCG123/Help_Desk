@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model chamado {
+  id               Int        @id @default(autoincrement())
+  titulo           String 
+  descricao        String
+  solucao_problema String?
+  prioridade       prioridade
+  aberto_em        DateTime   @default(now())
+
+  status       status @default(ABERTO)
+  usuario_id   Int
+  tecnico_id   Int?
+  categoria_id Int
+
+  usuario            pessoa              @relation("UsuarioChamados", fields: [usuario_id], references: [id], onDelete: Restrict)
+  tecnico            pessoa?             @relation("TecnicoChamados", fields: [tecnico_id], references: [id], onDelete: Restrict)
+  categoria          categoria           @relation(fields: [categoria_id], references: [id], onDelete: Restrict)
+  historico_chamados historico_chamado[]
+}
+
+model historico_chamado {
+  id           Int      @id @default(autoincrement())
+  chamado_id   Int
+  pessoa_id    Int
+  novo_status  status
+  data_mudanca DateTime @default(now())
+
+  chamado chamado @relation(fields: [chamado_id], references: [id], onDelete: Restrict)
+  pessoa  pessoa  @relation(fields: [pessoa_id], references: [id], onDelete: Restrict)
+}
+
+model categoria {
+  id      Int       @id @default(autoincrement())
+  titulo  String
+  chamado chamado[]
+}
+
+enum prioridade {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+enum status {
+  ABERTO
+  EM_ATENDIMENTO
+  RESOLVIDO
+  FECHADO
+  CANCELADO
+}
+
+model pessoa {
+  id            Int    @id @default(autoincrement())
+  nome_completo String
+  cpf           String @unique
+  email         String @unique
+  senha         String
+  cargo         cargo
+
+  telefone     String?
+  especialidade especialidade?
+  setor        setor?
+  criado_em    DateTime       @default(now())
+
+  chamado_usuario   chamado[]           @relation("UsuarioChamados")
+  chamado_tecnico   chamado[]           @relation("TecnicoChamados")
+  historico_chamado historico_chamado[]
+}
+
+enum setor {
+  ADMINISTRATIVO
+  FINANCEIRO
+  RECURSOS_HUMANOS
+  COMERCIAL
+  MARKETING
+  TECNOLOGIA
+  OPERACOES
+}
+
+enum especialidade {
+  HARDWARE
+  SOFTWARE
+  REDE
+  ACESSO
+}
+
+enum cargo {
+  TECNICO
+  USUARIO
+}
