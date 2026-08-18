@@ -1,16 +1,21 @@
 import { Router } from "express";
-import { AtualizarStatus, CancelarChamado, CriarChamado, ListarChamado, PesquisaNomeChamado, TecnicoResponsavel } from "../controller/chamado.controller.js";
+import { ListarChamado, DetalheChamado, CriarChamado, TecnicoResponsavel, AtualizarStatus, CancelarChamado } from "../controller/chamado.controller.js";
 import { AuthMiddleware, CargoPermitido } from "../middleware/AuthMiddleware.js";
 
+const router = Router();
 
-const router = Router()
+router.use(AuthMiddleware);
 
-router.use(AuthMiddleware)
-router.get("/listar", CargoPermitido(['TECNICO', 'USUARIO']), ListarChamado)
-router.get("/pesquisa", CargoPermitido(['TECNICO']), PesquisaNomeChamado)
-router.post("/criar", CargoPermitido(['TECNICO', 'USUARIO']), CriarChamado)
-router.post("/responsavel/:id", CargoPermitido(['TECNICO']), TecnicoResponsavel)
-router.patch("/atualizar/:id", CargoPermitido(['TECNICO']), AtualizarStatus)
-router.patch("/cancelar/:id", CargoPermitido(['TECNICO', 'USUARIO']), CancelarChamado)
+// Buscas e Listagens
+router.get("/", CargoPermitido(['TECNICO', 'USUARIO']), ListarChamado);
+router.get("/:id", CargoPermitido(['TECNICO', 'USUARIO']), DetalheChamado);
 
-export default router
+// Criação
+router.post("/", CargoPermitido(['USUARIO']), CriarChamado);
+
+// Ações específicas representadas por substantivos (Sub-recursos)
+router.patch("/:id/tecnico", CargoPermitido(['TECNICO']), TecnicoResponsavel);
+router.patch("/:id/status", CargoPermitido(['TECNICO']), AtualizarStatus);
+router.patch("/:id/cancelamento", CargoPermitido(['USUARIO']), CancelarChamado);
+
+export default router;

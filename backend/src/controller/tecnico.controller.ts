@@ -1,165 +1,160 @@
 import type { Response } from "express";
 import type { AuthRequest } from "../middleware/AuthMiddleware.js";
 import { prisma } from "../../lib/prisma.js";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 
-// LISTA OS TECNICOS 
 export async function ListarTecnico(req: AuthRequest, res: Response) {
     try {
         const listar = await prisma.pessoa.findMany({
-            where: { cargo: 'TECNICO' }, //COMO USO A MESMA TABELA COMO PRINCIPAL ACHO SE O CARGO FOR TECNICO
-            omit:{senha:true} //OMITO A SENHA PARA NAO VAZAR NENHUM DADO DE SEGURANÇA
-        })
-
-        res.status(200).json(listar)
+            where: { cargo: 'TECNICO' },
+            omit:{senha:true}
+        });
+        res.status(200).json(listar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar tecnicos"})
+        res.status(500).json({error: "Falha ao listar técnicos"});
     }
 }
 
-// PESQUISA POR NOME DOS TECNICOS 
 export async function PesquisaNomeTecnico(req: AuthRequest, res: Response) {
     try {
-        const { nome_completo } = req.query
+        const { nome_completo } = req.query;
 
         if(!nome_completo || typeof nome_completo !== 'string'){
-            res.status(400).json({error: "Parametro Invalido."})
-            return
+            return res.status(400).json({error: "Parâmetro Inválido."});
         }
 
         const pesquisa = await prisma.pessoa.findMany({
             where: {
-                nome_completo:{
-                    contains: nome_completo
-                }, cargo:'TECNICO'
+                nome_completo: { contains: nome_completo }, 
+                cargo: 'TECNICO'
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(pesquisa)
+        res.status(200).json(pesquisa);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar tecnicos pela pesquisa"})
+        res.status(500).json({error: "Falha ao listar técnicos pela pesquisa"});
     }
 }
 
-//CRIAÇAO DE TECNICO COM A DIFERENÇA DE ESPECIALIDADE E NAO TEM TELEFONE
 export async function CriarTecnico(req: AuthRequest, res: Response) {
     try {
-        const { nome_completo, cpf, email, setor_id, senha } = req.body
-        const setorIdNumber = Number(setor_id)
-
-        if( !nome_completo  || !cpf  || !email  || !setor_id  || !senha ){
-            res.status(400).json({error: "Todos os dados são obrigatório."})
-            return
+        // Atenção: Seu schema requer setor_id E especialidade_id
+        const { nome_completo, cpf, email, setor_id, especialidade_id, senha } = req.body;
+        
+        if(!nome_completo || !cpf || !email || !setor_id || !especialidade_id || !senha){
+            return res.status(400).json({error: "Todos os dados são obrigatórios."});
         }
 
-        if (Number.isNaN(setorIdNumber)) {
-            res.status(400).json({error: "setor_id inválido."})
-            return
+        // RF07: Validar e-mail e CPF únicos
+        const duplicado = await prisma.pessoa.findFirst({
+            where: { OR: [{ cpf }, { email }] }
+        });
+        if (duplicado) {
+            if (duplicado.cpf === cpf) return res.status(409).json({ error: "CPF já cadastrado." });
+            if (duplicado.email === email) return res.status(409).json({ error: "E-mail já cadastrado." });
         }
 
-        const senha_hash = await bcrypt.hash(senha, 10) //HASH DA SENHA PARA ENCRIPTAR
+        const senha_hash = await bcrypt.hash(senha, 10);
 
         const criar = await prisma.pessoa.create({
             data:{
-                nome_completo, cpf, email, setor_id: setorIdNumber, senha: senha_hash, cargo: 'TECNICO' //ENVIA OS DADOS E O HASH DA SENHA
+                nome_completo, 
+                cpf, 
+                email, 
+                setor_id: Number(setor_id), 
+                especialidade_id: Number(especialidade_id),
+                senha: senha_hash, 
+                cargo: 'TECNICO' 
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(criar)
+        res.status(201).json(criar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar tecnico"})
+        res.status(500).json({error: "Falha ao criar técnico"});
     }
 }
 
-//ATUALIZAR DADOS DO TECNICO
 export async function AtualizarTecnico(req: AuthRequest, res: Response) {
     try {
-        const {id} = req.params
-        const idNumber = Number(id)
+        const idNumber = Number(req.params.id);
+        if (Number.isNaN(idNumber)) return res.status(400).json({error: "ID inválido."});
 
-        if(!id){
-            res.status(401).json({error:"tecnico não identificado."})
-            return
+        const { nome_completo, cpf, email, setor_id, especialidade_id, senha } = req.body;
+
+        if(!nome_completo || !cpf || !email || !setor_id || !especialidade_id || !senha){
+            return res.status(400).json({error: "Todos os dados são obrigatórios."});
         }
-
-        if (Number.isNaN(idNumber)) {
-            res.status(400).json({error: "id inválido."})
-            return
-        }
-        const { nome_completo, cpf, email, setor_id, senha } = req.body
-        const setorIdNumber = Number(setor_id)
-
-        if( !nome_completo  || !cpf  || !email  || !setor_id  || !senha ){
-            res.status(400).json({error: "Todos os dados são obrigatório."})
-            return
-        }
-
-        if (Number.isNaN(setorIdNumber)) {
-            res.status(400).json({error: "setor_id inválido."})
-            return
-        }
-
-        const senha_hash = await bcrypt.hash(senha, 10)
 
         const tecnicoExistente = await prisma.pessoa.findFirst({
             where: { id: idNumber, cargo: 'TECNICO' },
-            select: { id: true }
-        })
+        });
 
         if(!tecnicoExistente){
-            res.status(404).json({error: "Técnico não encontrado."})
-            return
+            return res.status(404).json({error: "Técnico não encontrado."});
         }
+
+        // RF07: Validar duplicidade (ignorando o próprio ID)
+        const duplicado = await prisma.pessoa.findFirst({
+            where: { id: { not: idNumber }, OR: [{ cpf }, { email }] }
+        });
+        if (duplicado) {
+            if (duplicado.cpf === cpf) return res.status(409).json({ error: "CPF já está em uso por outro cadastro." });
+            if (duplicado.email === email) return res.status(409).json({ error: "E-mail já está em uso por outro cadastro." });
+        }
+
+        const senha_hash = await bcrypt.hash(senha, 10);
 
         const atualizar = await prisma.pessoa.update({
             where: { id: idNumber},
             data:{
-                nome_completo, cpf, email, setor_id: setorIdNumber, senha:senha_hash, cargo: 'TECNICO'
+                nome_completo, 
+                cpf, 
+                email, 
+                setor_id: Number(setor_id), 
+                especialidade_id: Number(especialidade_id),
+                senha: senha_hash, 
+                cargo: 'TECNICO'
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(atualizar)
+        res.status(200).json(atualizar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar tecnicos"})
+        res.status(500).json({error: "Falha ao atualizar técnico"});
     }
 }
 
-//DELETAR TECNICO
 export async function DeletarTecnico(req: AuthRequest, res: Response) {
     try {
-        const {id} = req.params
-        const idNumber = Number(id)
+        const idNumber = Number(req.params.id);
+        if (Number.isNaN(idNumber)) return res.status(400).json({error: "ID inválido."});
 
-        if(!id){ //VALIDAÇAO SE ENCONTRA O USUARIO DO AUTHREQUEST
-            res.status(401).json({error:"id invalido."})
-            return
-        }
+        const chamadosAtivos = await prisma.chamado.count({
+            where: { tecnico_id: idNumber, status: 'EM_ATENDIMENTO' }
+        });
 
-        if (Number.isNaN(idNumber)) {
-            res.status(400).json({error: "id inválido."})
-            return
+        // RF08: Retornar 409 Conflict
+        if(chamadosAtivos > 0) {
+            return res.status(409).json({error: "Não podes excluir um técnico que tem chamados em atendimento."});
         }
 
         const tecnicoExistente = await prisma.pessoa.findFirst({
             where: { id: idNumber, cargo: 'TECNICO' },
-            select: { id: true }
-        })
+        });
 
         if(!tecnicoExistente){
-            res.status(404).json({error: "Técnico não encontrado."})
-            return
+            return res.status(404).json({error: "Técnico não encontrado."});
         }
 
         const deletar = await prisma.pessoa.delete({
             where: { id: idNumber },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(deletar)
+        res.status(200).json(deletar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao deletar tecnico."})
+        res.status(500).json({error: "Falha ao deletar técnico."});
     }
 }

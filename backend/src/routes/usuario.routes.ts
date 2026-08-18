@@ -4,10 +4,10 @@ import { AuthMiddleware, CargoPermitido } from "../middleware/AuthMiddleware.js"
 const router = Router()
 
 router.use(AuthMiddleware)
-router.get("/listar", CargoPermitido(['TECNICO']), ListarUsuario)
-router.get("/pesquisa", CargoPermitido(['TECNICO']), PesquisaNomeUsuario)
-router.post("/criar", CargoPermitido(['TECNICO']), CriarUsuario)
-router.put("/atualizar/:id", CargoPermitido(['TECNICO']), AtualizarUsuario)
-router.delete("/deletar/:id", CargoPermitido(['TECNICO']), DeletarUsuario)
+router.get("/", CargoPermitido(['TECNICO']), ListarUsuario);
+router.get("/busca", CargoPermitido(['TECNICO']), PesquisaNomeUsuario);
+router.post("/", CargoPermitido(['TECNICO']), CriarUsuario);
+router.put("/:id", CargoPermitido(['TECNICO']), AtualizarUsuario);
+router.delete("/:id", CargoPermitido(['TECNICO']), DeletarUsuario);
 
 export default router

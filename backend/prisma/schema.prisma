@@ -51,6 +51,12 @@ model prioridade {
   chamado chamado[]
 }
 
+model especialidade {
+  id     Int    @id @default(autoincrement())
+  titulo String
+  pessoas pessoa[]
+}
+
 enum status {
   ABERTO
   EM_ATENDIMENTO
@@ -67,11 +73,12 @@ model pessoa {
   senha         String
   cargo         cargo
 
-  telefone String?
-
-  setor_id  Int
-  setor     setor    @relation(fields: [setor_id], references: [id])
-  criado_em DateTime @default(now())
+  telefone         String?
+  especialidade_id Int
+  especialidade    especialidade @relation(fields: [especialidade_id], references: [id])
+  setor_id         Int
+  setor            setor         @relation(fields: [setor_id], references: [id])
+  criado_em        DateTime      @default(now())
 
   chamado_usuario   chamado[]           @relation("UsuarioChamados")
   chamado_tecnico   chamado[]           @relation("TecnicoChamados")
@@ -82,13 +89,6 @@ model setor {
   id           Int      @id @default(autoincrement())
   titulo_setor String
   pessoa       pessoa[]
-}
-
-enum especialidade {
-  HARDWARE
-  SOFTWARE
-  REDE
-  ACESSO
 }
 
 enum cargo {

@@ -1,167 +1,153 @@
 import type { Response } from "express";
 import type { AuthRequest } from "../middleware/AuthMiddleware.js";
 import { prisma } from "../../lib/prisma.js";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
 
-//LISTAGEM DOS USUARIOS
 export async function ListarUsuario(req: AuthRequest, res: Response) {
     try {
         const listar = await prisma.pessoa.findMany({
-            where: { cargo: 'USUARIO' }, //CHAMA O CARGO PARA ENCONTRAR SOMENTE USUARIOS
+            where: { cargo: 'USUARIO' },
             omit:{senha:true}
-        })
-
-        res.status(200).json(listar)
+        });
+        res.status(200).json(listar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar usuarios"})
+        res.status(500).json({error: "Falha ao listar usuários"});
     }
 }
 
-//PESQUISA POR NOME DO USUARIO
 export async function PesquisaNomeUsuario(req: AuthRequest, res: Response) {
     try {
-        const { nome_completo } = req.query
+        const { nome_completo } = req.query;
 
         if(!nome_completo || typeof nome_completo !== 'string'){
-            res.status(400).json({error: "Parametro Invalido."})
-            return
+            return res.status(400).json({error: "Parâmetro Inválido."});
         }
 
         const pesquisa = await prisma.pessoa.findMany({
             where: {
-                nome_completo:{
-                    contains: nome_completo
-                }, cargo:'USUARIO'
+                nome_completo: { contains: nome_completo }, 
+                cargo: 'USUARIO'
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(pesquisa)
+        res.status(200).json(pesquisa);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar usuarios pela pesquisa"})
+        res.status(500).json({error: "Falha ao listar usuários pela pesquisa"});
     }
 }
 
-//CRIAÇAO DO USUARIO
 export async function CriarUsuario(req: AuthRequest, res: Response) {
     try {
-        const { nome_completo, cpf, email, telefone, setor_id, senha } = req.body
+        // Atenção: Schema obriga setor_id E especialidade_id
+        const { nome_completo, cpf, email, telefone, setor_id, especialidade_id, senha } = req.body;
 
-        const setorIdNumber = Number(setor_id)
-
-        if( !nome_completo  || !cpf  || !email  || !telefone  || !setor_id  || !senha ){
-            res.status(400).json({error: "Todos os dados são obrigatório."})
-            return
+        if(!nome_completo || !cpf || !email || !telefone || !setor_id || !especialidade_id || !senha){
+            return res.status(400).json({error: "Todos os dados são obrigatórios."});
         }
 
-        if (Number.isNaN(setorIdNumber)) {
-            res.status(400).json({error: "setor_id inválido."})
-            return
+        // RF07: Validar unicidade
+        const duplicado = await prisma.pessoa.findFirst({
+            where: { OR: [{ cpf }, { email }] }
+        });
+        if (duplicado) {
+            if (duplicado.cpf === cpf) return res.status(409).json({ error: "CPF já cadastrado." });
+            if (duplicado.email === email) return res.status(409).json({ error: "E-mail já cadastrado." });
         }
 
-        const senha_hash = await bcrypt.hash(senha, 10)
+        const senha_hash = await bcrypt.hash(senha, 10);
 
         const criar = await prisma.pessoa.create({
             data:{
-                nome_completo, cpf, email, telefone, setor_id: setorIdNumber, senha: senha_hash, cargo: 'USUARIO'
+                nome_completo, 
+                cpf, 
+                email, 
+                telefone, 
+                setor_id: Number(setor_id), 
+                especialidade_id: Number(especialidade_id),
+                senha: senha_hash, 
+                cargo: 'USUARIO'
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(criar)
+        res.status(201).json(criar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar usuario"})
+        res.status(500).json({error: "Falha ao criar usuário"});
     }
 }
 
-//AQUI ATUALIZA OS DADOS DO USUARIO
 export async function AtualizarUsuario(req: AuthRequest, res: Response) {
     try {
-        const {id} = req.params
-        const idNumber = Number(id)
+        const idNumber = Number(req.params.id);
+        if (Number.isNaN(idNumber)) return res.status(400).json({error: "ID inválido."});
 
-        if(!id){
-            res.status(401).json({error:"id invalido."})
-            return
+        const { nome_completo, cpf, email, telefone, setor_id, especialidade_id, senha } = req.body;
+
+        if(!nome_completo || !cpf || !email || !telefone || !setor_id || !especialidade_id || !senha){
+            return res.status(400).json({error: "Todos os dados são obrigatórios."});
         }
-
-        if (Number.isNaN(idNumber)) {
-            res.status(400).json({error: "id inválido."})
-            return
-        }
-
-        const { nome_completo, cpf, email, telefone, setor_id, senha } = req.body
-        const setorIdNumber = Number(setor_id)
-
-        if( !nome_completo  || !cpf  || !email  || !telefone  || !setor_id  || !senha ){
-            res.status(400).json({error: "Todos os dados são obrigatório."})
-            return
-        }
-
-        if (Number.isNaN(setorIdNumber)) {
-            res.status(400).json({error: "setor_id inválido."})
-            return
-        }
-
-        const senha_hash = await bcrypt.hash(senha, 10)
 
         const usuarioExistente = await prisma.pessoa.findFirst({
             where: { id: idNumber, cargo: 'USUARIO' },
-            select: { id: true }
-        })
+        });
 
         if(!usuarioExistente){
-            res.status(404).json({error: "Usuário não encontrado."})
-            return
+            return res.status(404).json({error: "Usuário não encontrado."});
         }
+
+        // RF07: Validar unicidade excluindo o próprio usuário
+        const duplicado = await prisma.pessoa.findFirst({
+            where: { id: { not: idNumber }, OR: [{ cpf }, { email }] }
+        });
+        if (duplicado) {
+            if (duplicado.cpf === cpf) return res.status(409).json({ error: "CPF já está em uso." });
+            if (duplicado.email === email) return res.status(409).json({ error: "E-mail já está em uso." });
+        }
+
+        const senha_hash = await bcrypt.hash(senha, 10);
 
         const atualizar = await prisma.pessoa.update({
             where: { id: idNumber},
             data:{
-                nome_completo, cpf, email, telefone, setor_id: setorIdNumber, senha:senha_hash, cargo: 'USUARIO'
+                nome_completo, 
+                cpf, 
+                email, 
+                telefone, 
+                setor_id: Number(setor_id), 
+                especialidade_id: Number(especialidade_id),
+                senha: senha_hash, 
+                cargo: 'USUARIO'
             },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(atualizar)
+        res.status(200).json(atualizar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao litar usuarios"})
+        res.status(500).json({error: "Falha ao atualizar usuário"});
     }
 }
 
-// CONTROLLER PARA DELETAR OS DADOS DO USUARIO
 export async function DeletarUsuario(req: AuthRequest, res: Response) {
     try {
-        const {id} = req.params
-        const idNumber = Number(id)
-
-        if(!id){ //VALIDAÇAO SE ENCONTRA O USUARIO DO AUTHREQUEST
-            res.status(401).json({error:"id invalido."})
-            return
-        }
-
-        if (Number.isNaN(idNumber)) {
-            res.status(400).json({error: "id inválido."})
-            return
-        }
+        const idNumber = Number(req.params.id);
+        if (Number.isNaN(idNumber)) return res.status(400).json({error: "ID inválido."});
 
         const usuarioExistente = await prisma.pessoa.findFirst({
             where: { id: idNumber, cargo: 'USUARIO' },
-            select: { id: true }
-        })
+        });
 
         if(!usuarioExistente){
-            res.status(404).json({error: "Usuário não encontrado."})
-            return
+            return res.status(404).json({error: "Usuário não encontrado."});
         }
 
         const deletar = await prisma.pessoa.delete({
             where: { id: idNumber },
             omit:{senha:true}
-        })
+        });
 
-        res.status(200).json(deletar)
+        res.status(200).json(deletar);
     } catch (error) {
-        res.status(500).json({error: "Falha ao deletar usuario."})
+        res.status(500).json({error: "Falha ao deletar usuário."});
     }
 }
